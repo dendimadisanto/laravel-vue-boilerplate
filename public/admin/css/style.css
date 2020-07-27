@@ -1,0 +1,15 @@
+.input-container {
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .icon {
+    padding: 10px;
+    color: #fff;
+    background-color: #2e59d9;
+    border-color: #2653d4;
+    min-width: 50px;
+    text-align: center;
+  }
