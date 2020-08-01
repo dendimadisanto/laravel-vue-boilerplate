@@ -102,6 +102,8 @@ class RegionRepo implements RegionInterface
             switch ($level) {
                 case '1':
                     $res = DB::table('provinsi')->where('id','=', $id[0])->update(['provinsi'=> $nama]);
+                    // dd($res);
+                    // exit;
                     break;
                  case '2':
                     $res = DB::table('kabupaten')->where('provinsi_id','=', $id[0])

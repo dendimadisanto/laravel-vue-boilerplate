@@ -1,3 +1,5 @@
+import { apiTreeWilayah } from '../../../Services';
+
 const state = () => ({
   isLoading:false,
    inital:
@@ -43,14 +45,14 @@ const actions = {
           let params= {};
           params.id = payload.id;
           params.level = payload.level;
-          axios.post(App.baseURL + '/get-tree-wilayah', params, App.request ).then(response=>{
-              if(response.data.success){
+          apiTreeWilayah.get(params).then(response=>{
+              if(response.success){
                 commit('setLoading', false);
                   if(payload != ''){
-                    commit('setChildren', response.data.result);
+                    commit('setChildren', response.result);
                   }
                   else{
-                    commit('setData', response.data.result);
+                    commit('setData', response.result);
                   }
                 resolve(response);
               }
@@ -63,8 +65,8 @@ const actions = {
     save( { commit, state} ){
         commit('setError', []);
         return new Promise ((resolve, reject) => {
-          axios.post(App.baseURL + '/saveRegion', state.form, App.request).then(res =>{
-                if(res.data.success){
+         apiTreeWilayah.save(state.form).then(res =>{
+                if(res.success){
                   commit('setModal', false);
                   resolve(state.selected[0]);
                 }
@@ -95,13 +97,13 @@ const actions = {
               let params = {};
               params.id = payload.id;
               params.level = payload.level;
-              axios.post(App.baseURL + '/delRegion', params, App.request).then(res=>{
-                  if(res.data.success){
-                    resolve(res.data);
-                  }
-              }).catch(err=>{
-                reject(err);
-              })
+              apiTreeWilayah.del(params).then(res=>{
+                    if(res.success){
+                      resolve(res);
+                    }
+                }).catch(err=>{
+                  reject(err);
+                })
           }
           })
       })
@@ -109,9 +111,9 @@ const actions = {
     getById({ commit }, payload){
         let params = {};
         params.id = payload.id;
-        axios.post(App.baseURL + '/getRegionById',params, App.request ).then(res=>{
-              if(res.data.success){
-                  commit('setForm', res.data.result);
+        apiTreeWilayah.getById(params).then(res=>{
+              if(res.success){
+                  commit('setForm', res.result);
                   commit('setModal', true);
               }
         })

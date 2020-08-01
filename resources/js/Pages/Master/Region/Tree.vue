@@ -39,9 +39,16 @@ export default {
         node = this.parent;
       }
       let getData = this.getNodes(node);
-        getData.then(res =>{
-           this.$set(node, "children", this.children);
-        })
+
+      return new Promise((resolve, reject)=>{
+          getData.then(res =>{
+            this.$set(node, "children", this.children);
+            resolve(true);
+          }).catch(err=>{
+            reject(false);
+          })
+      })
+        
         
     },
     async getNodes(node) {

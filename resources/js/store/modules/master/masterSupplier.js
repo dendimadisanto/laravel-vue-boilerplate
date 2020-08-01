@@ -1,3 +1,5 @@
+import { apiSupplier } from '../../../Services';
+
 const state = () => ({
       data : [],
       error: [],
@@ -6,13 +8,13 @@ const state = () => ({
       form:{
         supplier:'',
         id:0,
-        alamat:'',
+        address:'',
         phone:''
     },
     InitialForm:{
       supplier:'',
       id:0,
-      alamat:'',
+      address:'',
       phone:''
   },
     errors :[],
@@ -26,23 +28,32 @@ const state = () => ({
   const actions = {
     getSupplier ({ commit }, payload) {
       commit('setLoading', true);
-      axios.get(App.baseURL + '/get-supplier?page=' + payload,App.request).then(response=>{
-        commit('setData', response.data.result);
-        commit('Pagination/setPagging', response.data.result, { root: true });
-        commit('setLoading', false)
-      }).catch(error=>{
-        commit('setLoading', true);
-        Swal.fire('Information', 'Something Wrong', 'info');
-      });
+
+      return new Promise((resolve, reject)=>{
+          apiSupplier.get(payload).then(response=>{
+            commit('setData', response.result);
+            commit('Pagination/setPagging', response.result, { root: true });
+            commit('setLoading', false);
+            resolve(true);
+          }).catch(error=>{
+            commit('setLoading', true);
+            reject(false);
+          });
+        })
+   
     },
     save({ commit, state, dispatch, rootState }){
        commit('setError', []);
-       axios.post(App.baseURL + '/saveSupplier', state.form ,App.request ).then(response=>{
-            if(response.data.success){
-              Swal.fire('Information', response.data.msg, 'success');
-              dispatch('getSupplier', rootState.Pagination.page);
+         apiSupplier.save(state.form).then(response=>{
+            if(response.success){
               commit('setModal', false);
-              commit('setForm', state.InitialForm);
+                commit('resetForm');
+              dispatch('getSupplier', rootState.Pagination.page).then(res=>{
+                if(res){
+                  Swal.fire('Information', response.msg, 'success');
+                }
+              });
+             
             }
        }).catch(error => {
         if (error.response.status == 422){
@@ -51,9 +62,9 @@ const state = () => ({
        })
     },
     getById({ commit }, payload){
-      axios.post(App.baseURL + '/getSupplierById', {id:payload}, App.request).then(response =>{
-        if(response.data.success){
-          commit('setForm', response.data.result);
+      apiSupplier.getById(payload).then(response =>{
+        if(response.success){
+          commit('setForm', response.result);
           commit('setModal', true);
         }
       }).catch(error=>{
@@ -104,7 +115,7 @@ const state = () => ({
         Object.assign(state.form, value);
     },
     resetForm(state){
-      state.form = state.InitialForm;
+      Object.assign(state.form, state.InitialForm);
     }
   }
   

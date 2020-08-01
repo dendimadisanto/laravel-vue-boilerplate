@@ -108,10 +108,18 @@ export default {
         },
         simpan(){
             this.$store.dispatch('TreeWilayah/save').then(data => {
-                this.$refs.tree_wil.reloadNodes('parent');
-                 Swal.fire('Information', "Berhasil Disimpan", 'success');
+                this.$refs.tree_wil.reloadNodes('parent').then(res=>{
+                    if(res){
+                         Swal.fire('Information', "Berhasil Disimpan", 'success');
+                    }
+                });
+                
             }).catch(error=>{
-                 Swal.fire('Information', "Something wrong", 'error');
+                  if (error.response.status == 422){
+                      Swal.fire('Information', "Something wrong", 'error');
+                  }
+                 console.log(error);
+                 
             })
         },
         edit(){
@@ -132,8 +140,12 @@ export default {
                     return;
                 }
                 this.$store.dispatch('TreeWilayah/del', data[0]).then(res =>{
-                    this.$refs.tree_wil.reloadNodes('parent');
-                        Swal.fire('Information', res.msg, 'success');
+                    this.$refs.tree_wil.reloadNodes('parent').then(response=>{
+                        if(response){
+                            Swal.fire('Information', res.msg, 'success');
+                        }
+                    });
+                        
                 }).catch(error=>{
                         Swal.fire('Information', "Something wrong", 'error');
                 });
